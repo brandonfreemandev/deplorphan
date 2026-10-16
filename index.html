@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>deplorphan — A/V LAYER COLLIDER</title>
+  <meta name="description" content="Ultra-low-overhead experimental web art: stacked semi-transparent video, feeds, procedural visuals, and CRT TV static. $0 budget." />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <h1>DEPLORPHAN</h1>
+    </div>
+    <div class="controls">
+      <button id="btn-audio" type="button" title="Toggle audio noise">▶ start noise</button>
+      <button id="btn-glitch" type="button" title="Trigger glitch burst (Hotkey: G)">✸ glitch burst [G]</button>
+      <button id="btn-fullscreen" type="button" title="Toggle fullscreen (Hotkey: F)">⛶ fullscreen</button>
+    </div>
+  </header>
+
+  <section class="panel control-panel">
+    <div class="knob-row">
+      <label>static <span id="val-static">65</span>%
+        <input id="rng-static" type="range" min="0" max="100" value="65" />
+      </label>
+      <label>glitch <span id="val-glitch">0.35</span>
+        <input id="rng-glitch" type="range" min="0" max="1" step="0.01" value="0.35" />
+      </label>
+      <label>filter <span id="val-filter">800</span>Hz
+        <input id="rng-filter" type="range" min="60" max="8000" value="800" />
+      </label>
+      <label>gain <span id="val-gain">0.15</span>
+        <input id="rng-gain" type="range" min="0" max="0.9" step="0.01" value="0.15" />
+      </label>
+      <label class="check"><input id="chk-scanlines" type="checkbox" checked /> scanlines</label>
+      <label class="check"><input id="chk-hud" type="checkbox" checked /> hud</label>
+    </div>
+    <p class="hint">Keys: <kbd>G</kbd> glitch · <kbd>M</kbd> mute · <kbd>F</kbd> fullscreen · Stacked layers configured in <code>app.js:LAYERS</code></p>
+  </section>
+
+  <main class="monitor-container">
+    <div class="monitor-frame" id="monitor-frame">
+      <!-- Stacked visual layers are dynamically injected here -->
+      <div class="stage" id="stage"></div>
+
+      <!-- TV Static Canvas Layer -->
+      <canvas id="viz" class="static-canvas" aria-hidden="true"></canvas>
+
+      <!-- Scanlines & CRT curvature / vignette -->
+      <div class="scanline-overlay" id="scanline-overlay"></div>
+      <div class="crt-glow"></div>
+
+      <!-- Surveillance HUD / Telemetry OSD -->
+      <div class="hud" id="hud">
+        <div class="hud-top">
+          <span class="hud-rec"><span class="rec-dot">●</span> LIVE INTERCEPT</span>
+          <span class="hud-time" id="hud-time">00:00:00:00</span>
+          <span class="hud-channel">CH-LIVE / 24-7</span>
+        </div>
+        <div class="hud-bottom">
+          <span id="hud-layers-info">LAYERS: 0 ACTIVE</span>
+          <span class="hud-freq" id="hud-freq">FREQ: 800Hz</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <span>vanilla HTML/JS/CSS · no build · no deps · $0</span>
+  </footer>
+
+  <script src="./app.js"></script>
+</body>
+</html>

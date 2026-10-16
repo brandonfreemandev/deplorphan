@@ -1,0 +1,374 @@
+/* deplorphan — A/V LAYER COLLIDER
+ * Vanilla, zero-dep, creepy, glitchy, stacked monitor aesthetic.
+ */
+:root {
+  --bg: #090a0d;
+  --ink: #d7dadd;
+  --dim: #7a828a;
+  --acid: #b6ff2e;
+  --blood: #ff2e4d;
+  --cyan: #2ee6ff;
+  --panel: #111317;
+  --border: #22262c;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* — Top Bar — */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 1.2rem;
+  border-bottom: 1px dashed var(--border);
+  background: #0c0e12;
+  flex-wrap: wrap;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.15rem;
+  letter-spacing: 0.22em;
+  font-weight: 600;
+  color: #e4e7eb;
+}
+
+.controls {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+button {
+  background: #171a20;
+  color: var(--ink);
+  border: 1px solid #363c45;
+  padding: 0.45rem 0.8rem;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+button:hover {
+  border-color: var(--acid);
+  color: var(--acid);
+  background: #1f242c;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+/* — Control Panel — */
+.panel {
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  padding: 0.6rem 1.2rem;
+}
+
+.knob-row {
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: 0.82rem;
+}
+
+.knob-row label {
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+  color: var(--dim);
+}
+
+.knob-row label span {
+  color: var(--acid);
+  font-weight: bold;
+}
+
+input[type="range"] {
+  accent-color: var(--acid);
+  cursor: pointer;
+  width: 90px;
+}
+
+.check {
+  cursor: pointer;
+  user-select: none;
+}
+.check input { accent-color: var(--acid); }
+
+.hint {
+  margin: 0.35rem 0 0;
+  color: var(--dim);
+  font-size: 0.74rem;
+}
+
+kbd {
+  border: 1px solid #444;
+  padding: 0.05em 0.35em;
+  background: #16181d;
+  color: var(--acid);
+}
+
+code {
+  color: var(--acid);
+  font-size: 0.9em;
+}
+
+/* — Monitor Container & Frame — */
+.monitor-container {
+  flex: 1;
+  display: flex;
+  padding: 12px;
+  justify-content: center;
+  align-items: stretch;
+  min-height: 480px;
+}
+
+.monitor-frame {
+  position: relative;
+  width: 100%;
+  max-width: 1280px;
+  background: #000;
+  border: 2px solid #252a32;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(0,0,0,0.9), 0 0 10px rgba(182, 255, 46, 0.05);
+  display: flex;
+}
+
+/* — Layer Stage — */
+.stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #020203;
+  will-change: transform;
+  transform-origin: center center;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.layer video,
+.layer img,
+.layer canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: none;
+  display: block;
+}
+
+.layer iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  pointer-events: none;
+  transform: scale(1.06);
+  transform-origin: center center;
+}
+
+/* Broken / Disconnected feed placeholder */
+.broken-signal {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, #0e1014 0%, #030406 100%);
+  color: rgba(215, 218, 221, 0.4);
+  letter-spacing: 0.2em;
+  text-align: center;
+  position: relative;
+}
+
+.reticle {
+  position: absolute;
+  width: min(80%, 360px);
+  height: min(70%, 240px);
+  border: 1px dashed rgba(255, 255, 255, 0.04);
+  pointer-events: none;
+}
+.reticle-corner {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-color: rgba(255, 255, 255, 0.2);
+  border-style: solid;
+}
+.reticle-corner.tl { top: -1px; left: -1px; border-width: 1px 0 0 1px; }
+.reticle-corner.tr { top: -1px; right: -1px; border-width: 1px 1px 0 0; }
+.reticle-corner.bl { bottom: -1px; left: -1px; border-width: 0 0 1px 1px; }
+.reticle-corner.br { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; }
+
+.broken-tag {
+  font-size: 0.76rem;
+  letter-spacing: 0.22em;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 0.35rem;
+}
+.broken-status {
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  color: rgba(255, 46, 77, 0.55);
+}
+
+/* — Static Canvas — */
+.static-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  image-rendering: pixelated;
+  z-index: 10;
+}
+
+/* — Scanline & CRT Overlays — */
+.scanline-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.35) 0px,
+    rgba(0, 0, 0, 0.35) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  z-index: 20;
+}
+
+.scanline-overlay::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.08);
+  animation: roll-bar 7s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes roll-bar {
+  0% { transform: translateY(-30px); }
+  100% { transform: translateY(105vh); }
+}
+
+.crt-glow {
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.88), inset 0 0 16px rgba(182, 255, 46, 0.04);
+  pointer-events: none;
+  z-index: 25;
+  transition: box-shadow 0.08s ease-out;
+}
+
+/* — HUD / Surveillance Telemetry — */
+.hud {
+  position: absolute;
+  inset: 0;
+  padding: 0.9rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 30;
+  color: rgba(182, 255, 46, 0.65);
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  text-shadow: 0 0 3px rgba(182, 255, 46, 0.25);
+  opacity: 0.75;
+}
+
+.hud-top, .hud-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  letter-spacing: 0.12em;
+}
+
+.hud-rec {
+  color: rgba(255, 46, 77, 0.85);
+  font-weight: bold;
+}
+
+.rec-dot {
+  display: inline-block;
+  animation: blink 1.2s steps(2) infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* — Glitch burst animations — */
+body.glitch-all .stage {
+  animation: stagetear 0.35s steps(3);
+}
+
+@keyframes stagetear {
+  0% { transform: scale(1) translate(0, 0); filter: hue-rotate(0); }
+  25% { transform: scale(1.01) translate(-6px, 3px); filter: hue-rotate(180deg) invert(0.2); }
+  50% { transform: scale(0.99) translate(5px, -4px); filter: contrast(2) saturate(2); }
+  75% { transform: translate(-3px, -2px); }
+  100% { transform: none; filter: none; }
+}
+
+.layer-glitch {
+  animation: layerjitter 4s steps(2) infinite;
+}
+
+@keyframes layerjitter {
+  0%, 94%, 100% { transform: none; filter: none; }
+  95% { transform: translateX(8px) skewX(2deg); filter: invert(0.3) saturate(2); }
+  97% { transform: translateX(-6px); }
+  98% { transform: translateX(4px); }
+}
+
+/* — Footer — */
+footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.8rem 1.2rem;
+  color: var(--dim);
+  font-size: 0.74rem;
+  border-top: 1px solid var(--border);
+  background: #090a0d;
+}
+footer a { color: var(--acid); }
+
+@media (max-width: 600px) {
+  .monitor-container { padding: 6px; min-height: 340px; }
+  .hud { padding: 0.6rem; font-size: 0.72rem; }
+}
