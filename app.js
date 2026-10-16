@@ -35,10 +35,10 @@ const LAYERS = [
     id: 'layer-live-jelly',
     type: 'video',
     // Wikimedia Commons · CC BY 2.0 · Jim G (jimg944) · Monterey Bay Aquarium
-    // The clip's final seconds are a baked-in "Monterey Bay Aquarium / Sea
-    // Nettles" title card — trim loops only the clean footage below it.
+    // The clip carries aquarium branding at BOTH ends: an intro title card
+    // (~0-5s) and an end card (~55.5-61s). trim loops only the clean middle.
     src: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/9/94/Sea_Nettle_%28%22Chrysaora_Fuscescens%22%29%2C_Monterey_Bay_Aquarium.ogv/Sea_Nettle_%28%22Chrysaora_Fuscescens%22%29%2C_Monterey_Bay_Aquarium.ogv.480p.vp9.webm',
-    trim: { start: 0, end: 54 },
+    trim: { start: 5.5, end: 54 },
     label: 'ARCHIVE 01 — PACIFIC SEA NETTLES [MONTEREY BAY AQUARIUM]',
     opacity: 0.55,
     blendMode: 'normal',
