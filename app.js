@@ -18,6 +18,8 @@
  *  - glitch:    (boolean) subtle periodic tracking displacement
  *  - label:     (string) HUD identifier / camera tag
  *  - visible:   (boolean)
+ *  - trim:      (object) video only — { start, end } seconds; loops just this
+ *                        sub-range of the file (skips end-cards / dead tails)
  * =====================================================================
  */
 'use strict';
@@ -33,7 +35,10 @@ const LAYERS = [
     id: 'layer-live-jelly',
     type: 'video',
     // Wikimedia Commons · CC BY 2.0 · Jim G (jimg944) · Monterey Bay Aquarium
+    // The clip's final seconds are a baked-in "Monterey Bay Aquarium / Sea
+    // Nettles" title card — trim loops only the clean footage below it.
     src: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/9/94/Sea_Nettle_%28%22Chrysaora_Fuscescens%22%29%2C_Monterey_Bay_Aquarium.ogv/Sea_Nettle_%28%22Chrysaora_Fuscescens%22%29%2C_Monterey_Bay_Aquarium.ogv.480p.vp9.webm',
+    trim: { start: 0, end: 54 },
     label: 'ARCHIVE 01 — PACIFIC SEA NETTLES [MONTEREY BAY AQUARIUM]',
     opacity: 0.55,
     blendMode: 'normal',
@@ -45,7 +50,9 @@ const LAYERS = [
     id: 'layer-crystals',
     type: 'video',
     // Wikimedia Commons · CC BY 3.0 · Brandon Rasaka · phenyl salicylate crystallization
+    // Final ~3s are a fade to dead black — trimmed so the layer never idles dark.
     src: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/1/10/Crystallization_of_Phenyl_Salicylate.webm/Crystallization_of_Phenyl_Salicylate.webm.480p.vp9.webm',
+    trim: { start: 0, end: 321 },
     label: 'MICRO 02 — PHENYL SALICYLATE CRYSTAL GROWTH [POLARIZED MACRO]',
     opacity: 0.38,
     blendMode: 'screen',
@@ -167,13 +174,26 @@ function buildStage() {
         v.playsInline = true;
         v.preload = 'auto';
         v.src = cfg.src;
+        // trim: { start, end } loops only a sub-range of the file (e.g. to
+        // skip a baked-in end-card). Media-fragment #t= URLs are NOT enough —
+        // browsers ignore the fragment end bound once you seek — so the range
+        // is enforced on timeupdate here instead.
+        const trim = cfg.trim || null;
+        const rangeEnd = () =>
+          trim ? Math.min(trim.end, v.duration || trim.end) : v.duration;
         // Random start offset: layer timelines drift against each other, so
         // the composite never aligns the same way twice.
         v.addEventListener('loadedmetadata', () => {
           if (v.duration && isFinite(v.duration)) {
-            v.currentTime = Math.random() * v.duration * 0.8;
+            const start = trim ? trim.start : 0;
+            v.currentTime = start + Math.random() * Math.max(0.1, (rangeEnd() - start) * 0.8);
           }
         }, { once: true });
+        if (trim) {
+          v.addEventListener('timeupdate', () => {
+            if (v.currentTime >= trim.end - 0.05) v.currentTime = trim.start;
+          });
+        }
         v.onerror = () => {
           cfg.isVerifiedActive = false;
           layerEl.style.display = 'none';
